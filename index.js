@@ -1,5 +1,4 @@
-// index.js
-// Archivo principal que maneja la lógica del sistema de la aerolínea
+
 const Avion = require('./models/Avion');
 const Vuelo = require('./models/Vuelo');
 const Pasajero = require('./models/Pasajero');
@@ -8,26 +7,19 @@ const Mascota = require('./models/Mascota');
 const { preguntar, cerrar } = require('./utils/input');
 
 (async () => {
-  // Crear un nuevo avión
   const aviones = new Avion("Boeing 747");
 
-  // Solicitar el porcentaje de descuento para pasajeros VIP
   const descuentoVIP = parseFloat(await preguntar("Ingrese el descuento para pasajeros VIP (en %): "));
-  // Solicitar el peso límite de equipaje
   const pesoLimite = parseFloat(await preguntar("Ingrese el peso límite de equipaje (en kg): "));
-  // Solicitar el costo adicional por transportar un perro
   const costoPerro = parseFloat(await preguntar("Ingrese el costo adicional por transportar un perro: "));
-  // Calcular el costo adicional por transportar un gato
   const costoGato = costoPerro - 5000;
 
-  // Solicitar el número de vuelos
   const numeroVuelos = parseInt(await preguntar("¿Cuántos vuelos desea ingresar? "));
   for (let i = 0; i < numeroVuelos; i++) {
     const numeroVuelo = await preguntar(`Ingrese el número del vuelo ${i + 1}: `);
     const distanciaVuelo = parseInt(await preguntar(`Ingrese la distancia del vuelo ${i + 1} (en km): `));
     const vuelo = new Vuelo(numeroVuelo, distanciaVuelo);
 
-    // Solicitar el número de pasajeros
     const numeroPasajeros = parseInt(await preguntar("¿Cuántos pasajeros desea ingresar? "));
     for (let j = 0; j < numeroPasajeros; j++) {
       const nombrePasajero = await preguntar(`Ingrese el nombre del pasajero ${j + 1}: `);
@@ -35,7 +27,6 @@ const { preguntar, cerrar } = require('./utils/input');
       const tarifa = parseFloat(await preguntar(`Ingrese la tarifa del pasajero ${j + 1}: `));
       const pasajero = new Pasajero(nombrePasajero, vip, tarifa);
 
-      // Solicitar el número de equipajes
       const numeroEquipajes = parseInt(await preguntar("¿Cuántos equipajes desea ingresar (máximo 4)? "));
       for (let k = 0; k < numeroEquipajes; k++) {
         const pesoEquipaje = parseFloat(await preguntar(`Ingrese el peso del equipaje ${k + 1}: `));
@@ -43,7 +34,6 @@ const { preguntar, cerrar } = require('./utils/input');
         pasajero.agregarEquipaje(equipaje);
       }
 
-      // Preguntar si el pasajero tiene mascota
       const tieneMascota = (await preguntar("¿El pasajero tiene mascota? (si/no): ")).toLowerCase() === 'si';
       if (tieneMascota) {
         const tipoMascota = await preguntar("¿Qué tipo de mascota tiene? (perro/gato): ");
@@ -52,18 +42,14 @@ const { preguntar, cerrar } = require('./utils/input');
         pasajero.agregarMascota(mascota);
       }
 
-      // Agregar pasajero al vuelo
       vuelo.agregarPasajero(pasajero);
     }
 
-    // Agregar vuelo al avión
     aviones.agregarVuelo(vuelo);
   }
 
-  // Cerrar la interfaz de entrada de datos
   cerrar();
 
-  // Variables para almacenar los resultados
   let totalRecaudado = 0;
   let totalDescuentos = 0;
   let totalSobrepeso = 0;
@@ -74,13 +60,11 @@ const { preguntar, cerrar } = require('./utils/input');
   let vueloMayorCosto = null;
   let mayorCosto = 0;
 
-  // Recorrer los vuelos
   let actualVuelo = aviones.vuelos.cabeza;
   while (actualVuelo) {
     let actualPasajero = actualVuelo.valor.pasajeros.cabeza;
     let costoVuelo = 0;
 
-    // Recorrer los pasajeros
     while (actualPasajero) {
       const pasajero = actualPasajero.valor;
       const costo = pasajero.calcularCosto(descuentoVIP, pesoLimite, costoPerro, costoGato);
@@ -90,7 +74,6 @@ const { preguntar, cerrar } = require('./utils/input');
         totalDescuentos += (descuentoVIP / 100) * pasajero.tarifa;
       }
 
-      // Recorrer los equipajes
       let actualEquipaje = pasajero.equipajes.cabeza;
       while (actualEquipaje) {
         if (actualEquipaje.valor.peso > pesoLimite) {
@@ -99,7 +82,6 @@ const { preguntar, cerrar } = require('./utils/input');
         actualEquipaje = actualEquipaje.siguiente;
       }
 
-      // Recorrer las mascotas
       let actualMascota = pasajero.mascotas.cabeza;
       while (actualMascota) {
         if (actualMascota.valor.tipo === 'perro') {
@@ -126,7 +108,6 @@ const { preguntar, cerrar } = require('./utils/input');
     actualVuelo = actualVuelo.siguiente;
   }
 
-  // Mostrar los resultados
   console.log("Valor total recaudado por la aerolínea: ", totalRecaudado);
   console.log("Valor total de los descuentos otorgados a los pasajeros VIP: ", totalDescuentos);
   console.log("Número de vuelo que más costos generó por concepto de impuestos: ", vueloMayorCosto);
